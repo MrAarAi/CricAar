@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Custom Live Scoreboard</title>
+    <style>
+        /* आपकी वेबसाइट का एकदम क्लीन और प्रोफेशनल लुक */
+        body {
+            background-color: #0f0f0f; /* गहरा काला रंग ताकि OBS में क्रोमा की (Green Screen) की ज़रूरत न पड़े */
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .scoreboard-container {
+            background: #1e1e1e;
+            border-bottom: 5px solid #ffde00; /* गोल्ड बॉर्डर */
+            padding: 20px 40px;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            text-align: center;
+            min-width: 400px;
+        }
+
+        .match-info {
+            font-size: 12px;
+            color: #aaa;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .score-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .team-name {
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffde00;
+        }
+
+        .live-score {
+            font-size: 48px;
+            font-weight: 900;
+            margin: 0 20px;
+        }
+
+        .overs {
+            font-size: 18px;
+            color: #00ffcc;
+            font-weight: bold;
+        }
+
+        .batsmen {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #333;
+            display: flex;
+            justify-content: space-around;
+            font-size: 14px;
+            color: #eee;
+        }
+
+        .striker { color: #ffde00; font-weight: bold; }
+        .striker::after { content: "*"; }
+    </style>
+</head>
+<body>
+
+<div class="scoreboard-container">
+    <div class="match-info">ICC T20 World Cup - Live</div>
+    <div class="score-row">
+        <div class="team-name" id="teamA">IND</div>
+        <div class="live-score" id="mainScore">0/0</div>
+        <div class="overs" id="currentOvers">(0.0)</div>
+    </div>
+    <div class="batsmen">
+        <div id="bat1" class="striker">Loading Batsman</div>
+        <div id="bat2">Loading Batsman</div>
+    </div>
+</div>
+
+<script>
+    // यह फंक्शन डेटा अपडेट करेगा
+    function updateScoreboard() {
+        // यहाँ हम भविष्य में आपकी API लिंक डालेंगे
+        // फिलहाल ये ऑटो-अपडेट का डेमो है
+        const mockScore = "156/3";
+        const mockOvers = "(17.4)";
+        
+        document.getElementById('mainScore').innerText = mockScore;
+        document.getElementById('currentOvers').innerText = mockOvers;
+        document.getElementById('bat1').innerText = "V. Kohli 45(30)";
+        document.getElementById('bat2').innerText = "H. Pandya 12(8)";
+    }
+
+    // हर 5 सेकंड में अपडेट करें
+    setInterval(updateScoreboard, 5000);
+    updateScoreboard();
+</script>
+
+</body>
+</html>
