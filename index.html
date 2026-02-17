@@ -2,109 +2,110 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Custom Live Scoreboard</title>
+    <title>Professional Cricket Overlay</title>
     <style>
-        /* आपकी वेबसाइट का एकदम क्लीन और प्रोफेशनल लुक */
-        body {
-            background-color: #0f0f0f; /* गहरा काला रंग ताकि OBS में क्रोमा की (Green Screen) की ज़रूरत न पड़े */
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+        body { margin: 0; overflow: hidden; background: transparent; font-family: 'Arial Black', sans-serif; }
 
-        .scoreboard-container {
-            background: #1e1e1e;
-            border-bottom: 5px solid #ffde00; /* गोल्ड बॉर्डर */
-            padding: 20px 40px;
-            border-radius: 4px;
+        /* मुख्य स्कोरबोर्ड कंटेनर */
+        .main-container {
+            position: relative;
+            width: 1000px;
+            height: 200px;
+            background: linear-gradient(to bottom, #0042cc, #002b80);
+            border: 4px solid #fff;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            text-align: center;
-            min-width: 400px;
+            color: white;
+            padding: 0 20px;
         }
 
-        .match-info {
-            font-size: 12px;
-            color: #aaa;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
+        /* टीम का झंडा और नाम */
+        .team-box { text-align: center; width: 150px; }
+        .flag { width: 80px; height: 50px; border: 2px solid #fff; }
 
-        .score-row {
+        /* स्कोर का हिस्सा */
+        .score-box { flex-grow: 1; text-align: center; }
+        .score-text { font-size: 80px; margin: 0; text-shadow: 3px 3px #000; }
+        .overs-text { font-size: 25px; color: #ffde00; }
+
+        /* बैट्समैन वाला सेक्शन */
+        .players-bar {
+            position: absolute;
+            bottom: -80px;
+            width: 100%;
             display: flex;
-            justify-content: space-between;
+            gap: 10px;
+        }
+        .player-card {
+            background: rgba(0,0,0,0.8);
+            border-bottom: 5px solid #ff0000;
+            padding: 10px;
+            width: 48%;
+            display: flex;
             align-items: center;
         }
+        .player-img { width: 60px; height: 60px; border-radius: 50%; margin-right: 15px; border: 2px solid #fff; }
 
-        .team-name {
-            font-size: 28px;
-            font-weight: 800;
-            color: #ffde00;
+        /* गूगल के स्कोर को यहाँ "छुपकर" लोड करेंगे */
+        #hidden-google-box {
+            position: absolute;
+            top: -5000px; /* इसे स्क्रीन से बाहर भेज दिया */
         }
-
-        .live-score {
-            font-size: 48px;
-            font-weight: 900;
-            margin: 0 20px;
-        }
-
-        .overs {
-            font-size: 18px;
-            color: #00ffcc;
-            font-weight: bold;
-        }
-
-        .batsmen {
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px solid #333;
-            display: flex;
-            justify-content: space-around;
-            font-size: 14px;
-            color: #eee;
-        }
-
-        .striker { color: #ffde00; font-weight: bold; }
-        .striker::after { content: "*"; }
     </style>
 </head>
 <body>
 
-<div class="scoreboard-container">
-    <div class="match-info">ICC T20 World Cup - Live</div>
-    <div class="score-row">
-        <div class="team-name" id="teamA">IND</div>
-        <div class="live-score" id="mainScore">0/0</div>
-        <div class="overs" id="currentOvers">(0.0)</div>
+<div class="main-container">
+    <div class="team-box">
+        <img src="https://flagcdn.com/w160/in.png" class="flag">
+        <h2>INDIA</h2>
     </div>
-    <div class="batsmen">
-        <div id="bat1" class="striker">Loading Batsman</div>
-        <div id="bat2">Loading Batsman</div>
+    
+    <div class="score-box">
+        <p class="score-text" id="live-run-wicket">00 - 0</p>
+        <p class="overs-text" id="live-overs">OVERS: 0.0</p>
+    </div>
+
+    <div class="team-box">
+        <img src="https://flagcdn.com/w160/pk.png" class="flag">
+        <h2>PAK</h2>
+    </div>
+
+    <div class="players-bar">
+        <div class="player-card">
+            <img src="https://via.placeholder.com/60" class="player-img" id="img-bat1">
+            <div>
+                <div id="name-bat1" style="color: #ffde00;">BATSMAN 1</div>
+                <div id="score-bat1">0 (0)</div>
+            </div>
+        </div>
+        <div class="player-card">
+            <img src="https://via.placeholder.com/60" class="player-img" id="img-bat2">
+            <div>
+                <div id="name-bat2">BATSMAN 2</div>
+                <div id="score-bat2">0 (0)</div>
+            </div>
+        </div>
     </div>
 </div>
 
+<iframe id="google-frame" src="about:blank" style="display:none;"></iframe>
+
 <script>
-    // यह फंक्शन डेटा अपडेट करेगा
-    function updateScoreboard() {
-        // यहाँ हम भविष्य में आपकी API लिंक डालेंगे
-        // फिलहाल ये ऑटो-अपडेट का डेमो है
-        const mockScore = "156/3";
-        const mockOvers = "(17.4)";
-        
-        document.getElementById('mainScore').innerText = mockScore;
-        document.getElementById('currentOvers').innerText = mockOvers;
-        document.getElementById('bat1').innerText = "V. Kohli 45(30)";
-        document.getElementById('bat2').innerText = "H. Pandya 12(8)";
+    // यह स्क्रिप्ट गूगल के डेटा को आपकी सुंदर डिज़ाइन में फिट करेगी
+    async function syncScore() {
+        // नोट: असली ऑटोमेशन के लिए आपको एक 'CORS Proxy' का उपयोग करना होगा 
+        // ताकि आपकी साइट गूगल का डेटा पढ़ सके। 
+        // अभी के लिए यह डमी डेटा दिखा रहा है।
+        document.getElementById('live-run-wicket').innerText = "97 - 2";
+        document.getElementById('live-overs').innerText = "OVERS: 10.3";
+        document.getElementById('name-bat1').innerText = "S. YADAV";
+        document.getElementById('score-bat1').innerText = "45 (28)";
     }
 
-    // हर 5 सेकंड में अपडेट करें
-    setInterval(updateScoreboard, 5000);
-    updateScoreboard();
+    setInterval(syncScore, 5000);
 </script>
 
 </body>
